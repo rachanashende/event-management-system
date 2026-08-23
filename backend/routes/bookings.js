@@ -31,7 +31,7 @@ router.post('/', verifyToken, (req, res) => {
   }
 
   try {
-    const result = db.transaction(() => {
+    const result = db.runInTransaction(() => {
       const event = db.prepare('SELECT * FROM events WHERE id = ?').get(event_id);
       if (!event) throw { status: 404, message: 'Event not found' };
       if (event.status !== 'upcoming') throw { status: 400, message: 'This event is no longer accepting bookings' };
@@ -54,7 +54,7 @@ router.post('/', verifyToken, (req, res) => {
         .run(req.user.id, event_id, seats_booked, total_amount, payment_method, booking_ref);
 
       return db.prepare(bookingWithDetails + ' WHERE b.id = ?').get(info.lastInsertRowid);
-    })();
+    });
 
     res.status(201).json({ booking: result, message: 'Payment successful. Booking is pending admin approval.' });
   } catch (err) {
@@ -80,10 +80,10 @@ router.delete('/:id', verifyToken, (req, res) => {
     return res.status(400).json({ error: 'Booking is already cancelled' });
   }
 
-  db.transaction(() => {
+  db.runInTransaction(() => {
     db.prepare(`UPDATE bookings SET booking_status = 'cancelled', payment_status = 'refunded' WHERE id = ?`).run(req.params.id);
     db.prepare('UPDATE events SET available_seats = available_seats + ? WHERE id = ?').run(booking.seats_booked, booking.event_id);
-  })();
+  });
 
   res.json({ success: true });
 });
@@ -115,14 +115,14 @@ router.patch('/:id/status', verifyToken, requireAdmin, (req, res) => {
     return res.status(400).json({ error: 'Only pending bookings can be approved or rejected' });
   }
 
-  db.transaction(() => {
+  db.runInTransaction(() => {
     db.prepare('UPDATE bookings SET booking_status = ? WHERE id = ?').run(booking_status, req.params.id);
     if (booking_status === 'rejected') {
       // Release seats and mock-refund on rejection
       db.prepare('UPDATE events SET available_seats = available_seats + ? WHERE id = ?').run(booking.seats_booked, booking.event_id);
       db.prepare(`UPDATE bookings SET payment_status = 'refunded' WHERE id = ?`).run(req.params.id);
     }
-  })();
+  });
 
   const updated = db.prepare(bookingWithDetails + ' WHERE b.id = ?').get(req.params.id);
   res.json({ booking: updated });

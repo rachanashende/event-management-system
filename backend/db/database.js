@@ -1,11 +1,12 @@
-const Database = require('better-sqlite3');
+const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 
 const dbPath = path.join(__dirname, 'eventmanager.db');
-const db = new Database(dbPath);
+// enableForeignKeyConstraints defaults to true in node:sqlite, so foreign
+// keys (e.g. cascading deletes) are enforced automatically.
+const db = new DatabaseSync(dbPath);
 
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+db.exec('PRAGMA journal_mode = WAL');
 
 // ---------- SCHEMA ----------
 db.exec(`
@@ -61,4 +62,20 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_event ON bookings(event_id);
 `);
 
+// node:sqlite has no built-in db.transaction() helper (unlike better-sqlite3),
+// so wrap BEGIN/COMMIT/ROLLBACK manually. Used anywhere multiple writes must
+// succeed or fail together (e.g. booking a seat + decrementing availability).
+function runInTransaction(fn) {
+  db.exec('BEGIN');
+  try {
+    const result = fn();
+    db.exec('COMMIT');
+    return result;
+  } catch (err) {
+    db.exec('ROLLBACK');
+    throw err;
+  }
+}
+
 module.exports = db;
+module.exports.runInTransaction = runInTransaction;

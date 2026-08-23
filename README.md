@@ -4,8 +4,10 @@ A full-stack event management app with a **user module** (browse, book, pay) and
 (manage events, categories, approve bookings, manage users).
 
 ## Stack
-- **Backend:** Node.js, Express, SQLite (`better-sqlite3`), JWT auth, bcrypt
+- **Backend:** Node.js, Express, SQLite (Node's built-in `node:sqlite` module — no native compilation needed), JWT auth, bcrypt
 - **Frontend:** React (Vite), React Router, plain CSS — pastel blush/lavender "ticket stub" theme
+
+> Requires **Node.js 22.13+** (built-in SQLite support). Run `node -v` to check — if you're on an older version, grab the current LTS from nodejs.org.
 
 ## Project structure
 ```
@@ -37,13 +39,13 @@ copy .env.example .env      # (Mac/Linux: cp .env.example .env)
 ```
 Open `.env` and set a real `JWT_SECRET` (any long random string).
 
-If `better-sqlite3` fails to install (native module build error), you may need
-`node-gyp` build tools — usually fixed by running `npm install --global windows-build-tools`
-in an elevated PowerShell, or by installing the latest LTS Node.js which ships prebuilt binaries.
-
 ```bash
 npm start
 ```
+No native modules to compile here — the database uses Node's built-in `node:sqlite`,
+so `npm install` only pulls pure-JS packages (Express, JWT, bcrypt, etc). You'll see
+an `ExperimentalWarning: SQLite is an experimental feature` line in the console —
+that's expected and harmless, not an error.
 This runs on **http://localhost:5000** and auto-seeds the database on first run with:
 - Admin login: `admin@events.com` / `admin123`
 - User login: `user@events.com` / `user123`
@@ -82,3 +84,9 @@ This runs on **http://localhost:5173** and proxies `/api` calls to the backend o
   commit it to git if you push this to GitHub (it's already excluded via `.gitignore`).
 - Dates are stored/compared as plain `YYYY-MM-DD` strings server-side, avoiding the
   UTC-offset bugs that show up with IST when using JS `Date` objects on the backend.
+- The backend uses Node's built-in `node:sqlite` module (`DatabaseSync`) instead of the
+  `better-sqlite3` npm package, specifically to avoid the native-module compile step
+  that requires Visual Studio build tools on Windows. It's still marked "experimental"
+  by Node, but is stable enough for this kind of project. If you outgrow it later
+  (e.g. deploying with concurrent writers), Postgres via Prisma is the natural upgrade —
+  same pattern as the Daily Tracker app.
