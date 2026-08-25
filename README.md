@@ -69,6 +69,13 @@ This runs on **http://localhost:5173** and proxies `/api` calls to the backend o
   the booking you just made.
 
 ## Key design decisions
+- **QR e-tickets:** once a booking is approved, each seat's ticket shows a QR code
+  (encoding a simple `EVQ-<id>` string). Admins have a Check-in screen
+  (Admin nav → Check-in) where they paste/type a scanned code to look up the
+  attendee and confirm entry — works with any phone's camera QR scanner (copy the
+  decoded text) or a USB barcode scanner (which types the code + Enter automatically,
+  no extra hardware integration needed). Entry is blocked until the booking is
+  approved, and a ticket can't be checked in twice.
 - **CSV export:** the Attendees modal (Manage Events) and the Bookings table (Approve
   Bookings, respecting whichever status filter is active) both have an "Export CSV"
   button — a client-side download with no extra dependencies, handy for handing a

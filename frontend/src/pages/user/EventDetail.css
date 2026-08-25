@@ -107,6 +107,20 @@
 }
 .confirmation-attendee-row span:last-child { color: var(--ink); font-weight: 500; }
 
+.confirmation-attendee-row-qr {
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px dashed var(--border);
+}
+.confirmation-attendee-row-qr:first-of-type { border-top: none; }
+.confirmation-attendee-row-qr > div:first-child { color: var(--ink); font-weight: 500; }
+.confirmation-attendee-note {
+  font-size: 0.74rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
 .payment-methods {
   display: grid;
   grid-template-columns: 1fr 1fr;

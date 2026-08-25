@@ -26,6 +26,7 @@ export default function Navbar() {
               <NavLink to="/admin/events" className={({ isActive }) => (isActive ? 'active' : '')}>Events</NavLink>
               <NavLink to="/admin/categories" className={({ isActive }) => (isActive ? 'active' : '')}>Categories</NavLink>
               <NavLink to="/admin/bookings" className={({ isActive }) => (isActive ? 'active' : '')}>Bookings</NavLink>
+              <NavLink to="/admin/checkin" className={({ isActive }) => (isActive ? 'active' : '')}>Check-in</NavLink>
               <NavLink to="/admin/users" className={({ isActive }) => (isActive ? 'active' : '')}>Users</NavLink>
             </>
           ) : (

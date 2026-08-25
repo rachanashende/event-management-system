@@ -63,6 +63,8 @@ CREATE TABLE IF NOT EXISTS booking_attendees (
   seat_number INTEGER NOT NULL,
   name TEXT NOT NULL,
   phone TEXT,
+  checked_in INTEGER NOT NULL DEFAULT 0,
+  checked_in_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -71,6 +73,20 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_event ON bookings(event_id);
 CREATE INDEX IF NOT EXISTS idx_attendees_booking ON booking_attendees(booking_id);
 `);
+
+// ---------- LIGHTWEIGHT MIGRATIONS ----------
+// CREATE TABLE IF NOT EXISTS won't add new columns to a table that already
+// exists from a previous run, so any columns added after the initial release
+// (like the check-in fields below) need an explicit ALTER TABLE guard. This
+// keeps existing local .db files working without anyone deleting them.
+function ensureColumn(table, column, definition) {
+  const existing = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!existing.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+ensureColumn('booking_attendees', 'checked_in', 'INTEGER NOT NULL DEFAULT 0');
+ensureColumn('booking_attendees', 'checked_in_at', 'TEXT');
 
 // node:sqlite has no built-in db.transaction() helper (unlike better-sqlite3),
 // so wrap BEGIN/COMMIT/ROLLBACK manually. Used anywhere multiple writes must

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import QRTicket from '../../components/QRTicket';
+import '../../components/QRTicket.css';
 import './EventDetail.css';
 
 const PAYMENT_METHODS = [
@@ -101,11 +103,14 @@ export default function EventDetail() {
           </div>
           {confirmed.attendees?.length > 0 && (
             <div className="confirmation-attendees">
-              <span className="confirmation-attendees-label">Attendees</span>
+              <span className="confirmation-attendees-label">Attendees &amp; e-tickets</span>
               {confirmed.attendees.map((a) => (
-                <div key={a.id} className="confirmation-attendee-row">
-                  <span>Seat {a.seat_number}</span>
-                  <span>{a.name}</span>
+                <div key={a.id} className="confirmation-attendee-row confirmation-attendee-row-qr">
+                  <div>
+                    <div>Seat {a.seat_number} — {a.name}</div>
+                    <div className="confirmation-attendee-note">Ticket activates once admin approves</div>
+                  </div>
+                  <QRTicket value={`EVQ-${a.id}`} size={84} />
                 </div>
               ))}
             </div>

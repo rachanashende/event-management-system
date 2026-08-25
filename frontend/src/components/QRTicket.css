@@ -1,0 +1,22 @@
+.qr-ticket {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.qr-ticket img {
+  display: block;
+  border-radius: 4px;
+}
+
+.qr-ticket-loading {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--surface-alt);
+}

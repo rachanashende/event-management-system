@@ -58,5 +58,7 @@ export const api = {
   getStats: (token) => request('/admin/stats', { token }),
   getUsers: (token) => request('/admin/users', { token }),
   getUserDetail: (token, id) => request(`/admin/users/${id}`, { token }),
-  deleteUser: (token, id) => request(`/admin/users/${id}`, { method: 'DELETE', token })
+  deleteUser: (token, id) => request(`/admin/users/${id}`, { method: 'DELETE', token }),
+  lookupCheckin: (token, code) => request(`/admin/checkin/${encodeURIComponent(code)}`, { token }),
+  confirmCheckin: (token, code) => request(`/admin/checkin/${encodeURIComponent(code)}`, { method: 'POST', token })
 };

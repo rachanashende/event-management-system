@@ -23,7 +23,7 @@ const bookingWithDetails = `
 function withAttendees(booking) {
   if (!booking) return booking;
   const attendees = db
-    .prepare('SELECT id, seat_number, name, phone FROM booking_attendees WHERE booking_id = ? ORDER BY seat_number')
+    .prepare('SELECT id, seat_number, name, phone, checked_in, checked_in_at FROM booking_attendees WHERE booking_id = ? ORDER BY seat_number')
     .all(booking.id);
   return { ...booking, attendees };
 }

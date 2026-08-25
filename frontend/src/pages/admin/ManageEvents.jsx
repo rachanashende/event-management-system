@@ -81,11 +81,14 @@ export default function ManageEvents() {
       { key: 'phone', label: 'Phone' },
       { key: 'booking_ref', label: 'Booking Ref' },
       { key: 'booking_status', label: 'Status' },
+      { key: 'checked_in', label: 'Checked In' },
+      { key: 'checked_in_at', label: 'Checked In At' },
       { key: 'booked_by', label: 'Booked By' },
       { key: 'booked_by_email', label: 'Booked By Email' },
       { key: 'booked_at', label: 'Booked At' }
     ];
-    const csv = toCSV(columns, attendeesData);
+    const rows = attendeesData.map((a) => ({ ...a, checked_in: a.checked_in ? 'Yes' : 'No' }));
+    const csv = toCSV(columns, rows);
     downloadCSV(`attendees_${slugify(attendeesFor.title)}.csv`, csv);
   };
 
@@ -228,7 +231,7 @@ export default function ManageEvents() {
                       {a.phone && <span style={{ color: 'var(--ink-soft)' }}> · {a.phone}</span>}
                       <div style={{ fontSize: '0.76rem', color: 'var(--ink-faint)' }} className="mono">{a.booking_ref} · Seat {a.seat_number}</div>
                     </div>
-                    <span className={`badge badge-${a.booking_status}`}>{a.booking_status}</span>
+                    <span className={`badge badge-${a.checked_in ? 'approved' : a.booking_status}`}>{a.checked_in ? 'Checked in' : a.booking_status}</span>
                   </div>
                 ))}
               </div>

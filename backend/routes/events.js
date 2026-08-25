@@ -48,7 +48,7 @@ router.get('/:id/attendees', verifyToken, requireAdmin, (req, res) => {
 
   const attendees = db
     .prepare(
-      `SELECT ba.id, ba.seat_number, ba.name, ba.phone,
+      `SELECT ba.id, ba.seat_number, ba.name, ba.phone, ba.checked_in, ba.checked_in_at,
               b.booking_ref, b.booking_status, b.created_at AS booked_at,
               u.name AS booked_by, u.email AS booked_by_email
        FROM booking_attendees ba

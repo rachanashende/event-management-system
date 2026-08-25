@@ -15,6 +15,7 @@ import ManageEvents from './pages/admin/ManageEvents';
 import ManageCategories from './pages/admin/ManageCategories';
 import ApproveBookings from './pages/admin/ApproveBookings';
 import ManageUsers from './pages/admin/ManageUsers';
+import CheckIn from './pages/admin/CheckIn';
 
 function Layout({ children }) {
   const location = useLocation();
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/admin/categories" element={<RequireAdmin><ManageCategories /></RequireAdmin>} />
             <Route path="/admin/bookings" element={<RequireAdmin><ApproveBookings /></RequireAdmin>} />
             <Route path="/admin/users" element={<RequireAdmin><ManageUsers /></RequireAdmin>} />
+            <Route path="/admin/checkin" element={<RequireAdmin><CheckIn /></RequireAdmin>} />
 
             <Route path="*" element={<Home />} />
           </Routes>

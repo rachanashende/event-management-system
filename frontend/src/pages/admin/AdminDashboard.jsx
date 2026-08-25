@@ -43,6 +43,7 @@ export default function AdminDashboard() {
         <Link to="/admin/events" className="card admin-quick-link">🎪 Manage events</Link>
         <Link to="/admin/categories" className="card admin-quick-link">🏷 Manage categories</Link>
         <Link to="/admin/bookings" className="card admin-quick-link">✅ Approve bookings</Link>
+        <Link to="/admin/checkin" className="card admin-quick-link">🎫 Check-in scanner</Link>
         <Link to="/admin/users" className="card admin-quick-link">👥 Manage users</Link>
       </div>
     </div>
