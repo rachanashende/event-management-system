@@ -56,6 +56,7 @@ export const api = {
 
   // admin
   getStats: (token) => request('/admin/stats', { token }),
+  getAnalytics: (token) => request('/admin/analytics', { token }),
   getUsers: (token) => request('/admin/users', { token }),
   getUserDetail: (token, id) => request(`/admin/users/${id}`, { token }),
   deleteUser: (token, id) => request(`/admin/users/${id}`, { method: 'DELETE', token }),

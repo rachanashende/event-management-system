@@ -48,6 +48,28 @@
 }
 .admin-quick-link:hover { border-color: var(--lavender); }
 
+.analytics-heading { font-size: 1.3rem; margin: 40px 0 4px; }
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.analytics-card { padding: 22px 22px 14px; }
+.analytics-card h3 { font-size: 0.95rem; margin-bottom: 8px; }
+.analytics-card-wide { grid-column: 1 / -1; }
+.analytics-empty {
+  color: var(--ink-faint);
+  font-size: 0.85rem;
+  padding: 60px 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .analytics-grid { grid-template-columns: 1fr; }
+}
+
 /* Table */
 .admin-table-wrap {
   background: var(--surface);

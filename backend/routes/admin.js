@@ -19,6 +19,49 @@ router.get('/stats', (req, res) => {
   res.json({ totalUsers, totalEvents, upcomingEvents, pendingBookings, approvedBookings, revenue });
 });
 
+// Chart data for the admin analytics dashboard — revenue trend, category mix,
+// and per-event check-in rate. Only counts approved bookings, since that's
+// the only status that represents confirmed, paying attendance.
+router.get('/analytics', (req, res) => {
+  const revenueByDate = db
+    .prepare(
+      `SELECT date(created_at) AS date, SUM(total_amount) AS revenue
+       FROM bookings
+       WHERE booking_status = 'approved'
+       GROUP BY date(created_at)
+       ORDER BY date(created_at) ASC`
+    )
+    .all();
+
+  const bookingsByCategory = db
+    .prepare(
+      `SELECT COALESCE(c.name, 'Uncategorized') AS category, COALESCE(c.color, '#B9A6DE') AS color,
+              SUM(b.seats_booked) AS seats
+       FROM bookings b
+       JOIN events e ON e.id = b.event_id
+       LEFT JOIN categories c ON c.id = e.category_id
+       WHERE b.booking_status = 'approved'
+       GROUP BY COALESCE(c.id, -1)
+       ORDER BY seats DESC`
+    )
+    .all();
+
+  const checkinRates = db
+    .prepare(
+      `SELECT e.id, e.title,
+              COUNT(ba.id) AS total_attendees,
+              SUM(CASE WHEN ba.checked_in = 1 THEN 1 ELSE 0 END) AS checked_in
+       FROM events e
+       JOIN bookings b ON b.event_id = e.id AND b.booking_status = 'approved'
+       JOIN booking_attendees ba ON ba.booking_id = b.id
+       GROUP BY e.id
+       ORDER BY e.event_date ASC`
+    )
+    .all();
+
+  res.json({ revenueByDate, bookingsByCategory, checkinRates });
+});
+
 // List all users (with their booking counts)
 router.get('/users', (req, res) => {
   const users = db

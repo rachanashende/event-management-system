@@ -69,6 +69,10 @@ This runs on **http://localhost:5173** and proxies `/api` calls to the backend o
   the booking you just made.
 
 ## Key design decisions
+- **Analytics dashboard:** the admin Dashboard now shows three Recharts charts below
+  the summary cards — revenue over time, bookings by category, and check-in rate per
+  event — all computed from approved bookings only. Empty states show a friendly
+  message instead of a blank chart until there's approved data to plot.
 - **QR e-tickets:** once a booking is approved, each seat's ticket shows a QR code
   (encoding a simple `EVQ-<id>` string). Admins have a Check-in screen
   (Admin nav → Check-in) where they paste/type a scanned code to look up the
