@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import { toCSV, downloadCSV, slugify } from '../../utils/csv';
 import './AdminPages.css';
 
 const emptyForm = {
@@ -70,6 +71,22 @@ export default function ManageEvents() {
     } catch (err) {
       setAttendeesError(err.message);
     }
+  };
+
+  const handleExportAttendees = () => {
+    if (!attendeesData || attendeesData.length === 0) return;
+    const columns = [
+      { key: 'seat_number', label: 'Seat' },
+      { key: 'name', label: 'Attendee Name' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'booking_ref', label: 'Booking Ref' },
+      { key: 'booking_status', label: 'Status' },
+      { key: 'booked_by', label: 'Booked By' },
+      { key: 'booked_by_email', label: 'Booked By Email' },
+      { key: 'booked_at', label: 'Booked At' }
+    ];
+    const csv = toCSV(columns, attendeesData);
+    downloadCSV(`attendees_${slugify(attendeesFor.title)}.csv`, csv);
   };
 
   const handleDelete = async (ev) => {
@@ -186,7 +203,12 @@ export default function ManageEvents() {
       {attendeesFor && (
         <div className="modal-overlay" onClick={() => setAttendeesFor(null)}>
           <div className="card modal-panel" onClick={(e) => e.stopPropagation()}>
-            <h2>Attendees — {attendeesFor.title}</h2>
+            <div className="admin-header-row" style={{ marginBottom: 4 }}>
+              <h2 style={{ marginBottom: 0 }}>Attendees — {attendeesFor.title}</h2>
+              {attendeesData?.length > 0 && (
+                <button className="btn btn-ghost btn-sm" onClick={handleExportAttendees}>⬇ Export CSV</button>
+              )}
+            </div>
             <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem', marginBottom: 18 }}>
               {formatDate(attendeesFor.event_date)} · {attendeesFor.venue}
             </p>

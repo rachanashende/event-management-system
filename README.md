@@ -69,6 +69,10 @@ This runs on **http://localhost:5173** and proxies `/api` calls to the backend o
   the booking you just made.
 
 ## Key design decisions
+- **CSV export:** the Attendees modal (Manage Events) and the Bookings table (Approve
+  Bookings, respecting whichever status filter is active) both have an "Export CSV"
+  button — a client-side download with no extra dependencies, handy for handing a
+  printable check-in sheet to event staff.
 - **Attendee details:** each seat in a booking captures a name (required) and phone
   (optional) at booking time, stored in a `booking_attendees` table linked to the
   booking. Admins can view the full attendee list per event (Manage Events → Attendees)

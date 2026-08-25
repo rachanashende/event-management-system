@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import { toCSV, downloadCSV, slugify } from '../../utils/csv';
 import './AdminPages.css';
 
 const TABS = [
@@ -39,17 +40,39 @@ export default function ApproveBookings() {
     }
   };
 
+  const handleExport = () => {
+    if (bookings.length === 0) return;
+    const columns = [
+      { key: 'booking_ref', label: 'Booking Ref' },
+      { key: 'user_name', label: 'Booked By' },
+      { key: 'user_email', label: 'Email' },
+      { key: 'event_title', label: 'Event' },
+      { key: 'event_date', label: 'Event Date' },
+      { key: 'seats_booked', label: 'Seats' },
+      { key: 'total_amount', label: 'Amount' },
+      { key: 'payment_method', label: 'Payment Method' },
+      { key: 'booking_status', label: 'Status' },
+      { key: 'created_at', label: 'Booked At' }
+    ];
+    const csv = toCSV(columns, bookings);
+    const label = tab ? tab : 'all';
+    downloadCSV(`bookings_${slugify(label)}.csv`, csv);
+  };
+
   return (
     <div className="container admin-page">
       <h1>Bookings</h1>
       <p className="admin-subtitle">Review and approve or reject user booking requests.</p>
 
-      <div className="filter-tabs">
-        {TABS.map((t) => (
-          <button key={t.id} className={`filter-tab ${tab === t.id ? 'filter-tab-active' : ''}`} onClick={() => setTab(t.id)}>
-            {t.label}
-          </button>
-        ))}
+      <div className="admin-header-row" style={{ marginBottom: 8 }}>
+        <div className="filter-tabs" style={{ marginBottom: 0 }}>
+          {TABS.map((t) => (
+            <button key={t.id} className={`filter-tab ${tab === t.id ? 'filter-tab-active' : ''}`} onClick={() => setTab(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={handleExport} disabled={bookings.length === 0}>⬇ Export CSV</button>
       </div>
 
       {error && <div className="error-text">{error}</div>}
