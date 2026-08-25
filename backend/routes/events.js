@@ -41,6 +41,27 @@ router.get('/:id', (req, res) => {
   res.json({ event });
 });
 
+// Admin: list all attendees for this event (across approved + pending bookings), for check-in
+router.get('/:id/attendees', verifyToken, requireAdmin, (req, res) => {
+  const event = db.prepare('SELECT id, title FROM events WHERE id = ?').get(req.params.id);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
+
+  const attendees = db
+    .prepare(
+      `SELECT ba.id, ba.seat_number, ba.name, ba.phone,
+              b.booking_ref, b.booking_status, b.created_at AS booked_at,
+              u.name AS booked_by, u.email AS booked_by_email
+       FROM booking_attendees ba
+       JOIN bookings b ON b.id = ba.booking_id
+       JOIN users u ON u.id = b.user_id
+       WHERE b.event_id = ? AND b.booking_status IN ('pending', 'approved')
+       ORDER BY b.created_at ASC, ba.seat_number ASC`
+    )
+    .all(req.params.id);
+
+  res.json({ event, attendees });
+});
+
 // Admin: create event
 router.post('/', verifyToken, requireAdmin, (req, res) => {
   const { title, description, category_id, venue, event_date, event_time, price, total_seats } = req.body;

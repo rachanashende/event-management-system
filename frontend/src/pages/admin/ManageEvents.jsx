@@ -22,6 +22,9 @@ export default function ManageEvents() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [attendeesFor, setAttendeesFor] = useState(null);
+  const [attendeesData, setAttendeesData] = useState(null);
+  const [attendeesError, setAttendeesError] = useState('');
 
   const load = () => api.getEvents().then((d) => setEvents(d.events)).catch((e) => setError(e.message));
   useEffect(() => {
@@ -54,6 +57,18 @@ export default function ManageEvents() {
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const openAttendees = async (ev) => {
+    setAttendeesFor(ev);
+    setAttendeesData(null);
+    setAttendeesError('');
+    try {
+      const d = await api.getEventAttendees(token, ev.id);
+      setAttendeesData(d.attendees);
+    } catch (err) {
+      setAttendeesError(err.message);
     }
   };
 
@@ -95,6 +110,7 @@ export default function ManageEvents() {
                 <td><span className={`badge badge-${ev.status === 'upcoming' ? 'approved' : ev.status === 'cancelled' ? 'rejected' : 'pending'}`}>{ev.status}</span></td>
                 <td>
                   <div className="admin-table-actions">
+                    <button className="btn btn-ghost btn-sm" onClick={() => openAttendees(ev)}>Attendees</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => openEdit(ev)}>Edit</button>
                     <button className="btn btn-danger btn-sm" onClick={() => handleDelete(ev)}>Delete</button>
                   </div>
@@ -165,6 +181,41 @@ export default function ManageEvents() {
               <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save event'}</button>
             </div>
           </form>
+        </div>
+      )}
+      {attendeesFor && (
+        <div className="modal-overlay" onClick={() => setAttendeesFor(null)}>
+          <div className="card modal-panel" onClick={(e) => e.stopPropagation()}>
+            <h2>Attendees — {attendeesFor.title}</h2>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.85rem', marginBottom: 18 }}>
+              {formatDate(attendeesFor.event_date)} · {attendeesFor.venue}
+            </p>
+
+            {attendeesError && <div className="error-text">{attendeesError}</div>}
+
+            {!attendeesData ? (
+              !attendeesError && <p style={{ color: 'var(--ink-soft)' }}>Loading attendees…</p>
+            ) : attendeesData.length === 0 ? (
+              <p style={{ color: 'var(--ink-soft)' }}>No attendee details recorded for this event yet.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 340, overflowY: 'auto' }}>
+                {attendeesData.map((a) => (
+                  <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem', borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
+                    <div>
+                      <strong>{a.name}</strong>
+                      {a.phone && <span style={{ color: 'var(--ink-soft)' }}> · {a.phone}</span>}
+                      <div style={{ fontSize: '0.76rem', color: 'var(--ink-faint)' }} className="mono">{a.booking_ref} · Seat {a.seat_number}</div>
+                    </div>
+                    <span className={`badge badge-${a.booking_status}`}>{a.booking_status}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="modal-actions">
+              <button className="btn btn-ghost" onClick={() => setAttendeesFor(null)}>Close</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

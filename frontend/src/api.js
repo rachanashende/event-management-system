@@ -41,6 +41,7 @@ export const api = {
     return request(`/events${qs ? `?${qs}` : ''}`);
   },
   getEvent: (id) => request(`/events/${id}`),
+  getEventAttendees: (token, id) => request(`/events/${id}/attendees`, { token }),
   createEvent: (token, payload) => request('/events', { method: 'POST', body: payload, token }),
   updateEvent: (token, id, payload) => request(`/events/${id}`, { method: 'PUT', body: payload, token }),
   deleteEvent: (token, id) => request(`/events/${id}`, { method: 'DELETE', token }),

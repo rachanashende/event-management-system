@@ -56,6 +56,57 @@
 .seat-stepper button:disabled { opacity: 0.4; }
 .seat-stepper span { min-width: 20px; text-align: center; font-weight: 600; }
 
+.attendee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.attendee-row {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.attendee-seat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.attendee-row input {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 0.85rem;
+  background: var(--surface);
+}
+.attendee-row input:focus { outline: none; border-color: var(--lavender); }
+
+.confirmation-attendees {
+  padding: 0 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.confirmation-attendees-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
+}
+.confirmation-attendee-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.confirmation-attendee-row span:last-child { color: var(--ink); font-weight: 500; }
+
 .payment-methods {
   display: grid;
   grid-template-columns: 1fr 1fr;

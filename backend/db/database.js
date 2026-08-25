@@ -57,9 +57,19 @@ CREATE TABLE IF NOT EXISTS bookings (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS booking_attendees (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_id INTEGER NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
+  seat_number INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  phone TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_events_category ON events(category_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_event ON bookings(event_id);
+CREATE INDEX IF NOT EXISTS idx_attendees_booking ON booking_attendees(booking_id);
 `);
 
 // node:sqlite has no built-in db.transaction() helper (unlike better-sqlite3),

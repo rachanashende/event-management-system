@@ -64,6 +64,9 @@ export default function MyBookings() {
                 <div className="booking-row-info">
                   <span className="mono booking-ref">{b.booking_ref}</span>
                   <span>{b.seats_booked} seat{b.seats_booked > 1 ? 's' : ''} · <span className="mono">₹{b.total_amount}</span> via {b.payment_method}</span>
+                  {b.attendees?.length > 0 && (
+                    <span className="booking-row-attendees">{b.attendees.map((a) => a.name).join(', ')}</span>
+                  )}
                 </div>
                 <div className="booking-row-actions">
                   <span className={`badge badge-${b.booking_status}`}>{b.booking_status}</span>
